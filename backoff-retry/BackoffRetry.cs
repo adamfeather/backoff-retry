@@ -1,36 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 
 namespace backoff_retry
 {
     public class BackoffRetry
     {
-        public BackoffRetry()
+        private Action _functionToAttempt;
+
+        private List<Exception> _exceptions;
+
+        public int RetryAttempts { get; private set; }
+
+        public IEnumerable<Exception> Exceptions => _exceptions;
+
+        public BackoffRetry(Action functionToAttempt)
         {
+            this._exceptions = new List<Exception>();
+
+            this._functionToAttempt = functionToAttempt;
         }
 
-        public bool Attempt()
+        /// <summary>
+        /// Attempt operation with exponentially increasing backoff times. 
+        /// Intital iteration happens immediately; backoffs only begin to occur if intial attempt is unsuccessful.
+        /// </summary>
+        /// <param name="maxRetryAttempts"></param>
+        /// <param name="initialBackoff"></param>
+        /// <returns>If the </returns>
+        public bool AttemptExponential(int maxRetryAttempts, TimeSpan initialBackoff)
         {
-            var list_of_integers = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            var backoffs = GenerateExponentialBackoffs(maxRetryAttempts, initialBackoff);
 
-            IEnumerable<Foo> result =
-                list_of_integers
-                    .Where(GreaterThanFive)
-                    .Select(NewFooObject);
+            foreach (var backoff in backoffs)
+            {
+                try
+                {
+                    Thread.Sleep(backoff);
 
-            return true;
+                    this._functionToAttempt();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    this._exceptions.Add(ex);
+
+                    bool firstAttempt = backoffs.IndexOf(backoff) == 0;
+
+                    if (!firstAttempt)
+                    {
+                        RetryAttempts++;
+                    }
+                }
+            }
+
+            return false;
         }
 
-        private Foo NewFooObject(int i)
+        private IList<TimeSpan> GenerateExponentialBackoffs(int maxAttempts, TimeSpan backoffSeed)
         {
-            return new Foo(i);
-        }
+            var backoffs = new List<TimeSpan>()
+                {
+                    TimeSpan.FromTicks(0)
+                };
 
-        private static bool GreaterThanFive(int i)
-        {
-            return i > 5;
+            for (int i = 0; i < maxAttempts; i++)
+            {
+                var multiplier = (int)Math.Pow(2, i);
+
+                backoffs.Add(TimeSpan.FromTicks(backoffSeed.Ticks * multiplier));
+            }
+
+            return backoffs;
         }
     }
 }

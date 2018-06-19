@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "backoff-retry", "backoff-retry\backoff-retry.csproj", "{30CBE1E5-13B7-4AEE-991E-61EC3BACA896}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "backoff-retry", "backoff-retry\backoff-retry.csproj", "{30CBE1E5-13B7-4AEE-991E-61EC3BACA896}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "backoff-retry.tests", "backoff-retry.tests\backoff-retry.tests.csproj", "{55A431D0-545F-4FFA-963B-B8EDDBD4675A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{30CBE1E5-13B7-4AEE-991E-61EC3BACA896}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30CBE1E5-13B7-4AEE-991E-61EC3BACA896}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30CBE1E5-13B7-4AEE-991E-61EC3BACA896}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55A431D0-545F-4FFA-963B-B8EDDBD4675A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55A431D0-545F-4FFA-963B-B8EDDBD4675A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55A431D0-545F-4FFA-963B-B8EDDBD4675A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55A431D0-545F-4FFA-963B-B8EDDBD4675A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
