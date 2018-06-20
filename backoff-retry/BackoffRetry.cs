@@ -10,7 +10,7 @@ namespace backoff_retry
 
         private List<Exception> _exceptions;
 
-        public int RetryAttempts { get; private set; }
+        public int Attempts { get; private set; } = 0;
 
         public IEnumerable<Exception> Exceptions => _exceptions;
 
@@ -25,19 +25,24 @@ namespace backoff_retry
         /// Attempt operation with exponentially increasing backoff times. 
         /// Intital iteration happens immediately; backoffs only begin to occur if intial attempt is unsuccessful.
         /// </summary>
-        /// <param name="maxRetryAttempts"></param>
-        /// <param name="initialBackoff"></param>
-        /// <returns>If the </returns>
-        public bool AttemptExponential(int maxRetryAttempts, TimeSpan initialBackoff)
+        /// <param name="maxAttempts">The amount of times to try the operation, this includes the inital immediate attempt. This means a minimum of 2 attempts.</param>
+        /// <param name="initialBackoff">The intial amount of time to backoff. This increases exponentially with each attempt.</param>
+        /// <returns>If the operation succeeded during one of the attempts.</returns>
+        public bool AttemptExponential(int maxAttempts, TimeSpan initialBackoff)
         {
-            var backoffs = GenerateExponentialBackoffs(maxRetryAttempts, initialBackoff);
-
-            foreach (var backoff in backoffs)
+            if (maxAttempts < 2)
             {
+                throw new ArgumentOutOfRangeException(nameof(maxAttempts), "Must request a minimum of 2 attempts.");
+            }
+
+            var backoffs = GenerateExponentialBackoffs(maxAttempts, initialBackoff).GetEnumerator();
+
+            do
+            {
+                Attempts++;
+
                 try
                 {
-                    Thread.Sleep(backoff);
-
                     this._functionToAttempt();
 
                     return true;
@@ -46,30 +51,22 @@ namespace backoff_retry
                 {
                     this._exceptions.Add(ex);
 
-                    bool firstAttempt = backoffs.IndexOf(backoff) == 0;
-
-                    if (!firstAttempt)
-                    {
-                        RetryAttempts++;
-                    }
+                    Thread.Sleep(backoffs.Current);
                 }
-            }
+            } while (backoffs.MoveNext());
 
             return false;
         }
 
-        private IList<TimeSpan> GenerateExponentialBackoffs(int maxAttempts, TimeSpan backoffSeed)
+        private IList<TimeSpan> GenerateExponentialBackoffs(int maxAttempts, TimeSpan intialBackoff)
         {
-            var backoffs = new List<TimeSpan>()
-                {
-                    TimeSpan.FromTicks(0)
-                };
+            var backoffs = new List<TimeSpan>();
 
-            for (int i = 0; i < maxAttempts; i++)
+            for (int i = 0; i < maxAttempts - 1; i++)
             {
                 var multiplier = (int)Math.Pow(2, i);
 
-                backoffs.Add(TimeSpan.FromTicks(backoffSeed.Ticks * multiplier));
+                backoffs.Add(TimeSpan.FromTicks(intialBackoff.Ticks * multiplier));
             }
 
             return backoffs;

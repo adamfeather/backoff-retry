@@ -3,6 +3,16 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>backoff_retry</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Adam Feather</Authors>
+    <Description>.NET Standard 2.0. Implements synchronous exponential backoff and retry logic</Description>
+    <PackageTags>Backoff retry exponential</PackageTags>
+    <RepositoryUrl>https://github.com/adamfeather/backoff-retry</RepositoryUrl>
+    <Copyright>Adam Feather</Copyright>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <Version>2.0.0</Version>
+    <PackageProjectUrl>https://github.com/adamfeather/backoff-retry</PackageProjectUrl>
   </PropertyGroup>
 
 </Project>

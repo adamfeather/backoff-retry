@@ -7,7 +7,7 @@ namespace backoff_retry.tests.UnitTests
     [TestFixture]
     public class Failure
     {
-        [TestCase(1)]
+        [TestCase(2)]
         [TestCase(3)]
         [TestCase(5)]
         [TestCase(6)]
@@ -20,8 +20,16 @@ namespace backoff_retry.tests.UnitTests
             bool result = backoffRetry.AttemptExponential(maxAttempts, TimeSpan.FromMilliseconds(10));
 
             Assert.That(result, Is.False);
-            Assert.That(backoffRetry.RetryAttempts, Is.EqualTo(maxAttempts));
-            Assert.That(backoffRetry.Exceptions.Count(), Is.EqualTo(maxAttempts + 1));
+            Assert.That(backoffRetry.Attempts, Is.EqualTo(maxAttempts));
+            Assert.That(backoffRetry.Exceptions.Count(), Is.EqualTo(maxAttempts));
+        }
+
+        [Test]
+        public void Should_Throw_ArgumentOutOfRangeException_When_Requesting_Only_One_Attempt()
+        {
+            var backoffRetry = new BackoffRetry(() => { });
+
+            Assert.Throws(typeof(ArgumentOutOfRangeException), () => backoffRetry.AttemptExponential(1, TimeSpan.FromMilliseconds(10)));
         }
     }
 }
