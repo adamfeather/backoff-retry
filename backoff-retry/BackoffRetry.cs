@@ -23,10 +23,10 @@ namespace backoff_retry
 
         /// <summary>
         /// Attempt operation with exponentially increasing backoff times. 
-        /// Intital iteration happens immediately; backoffs only begin to occur if intial attempt is unsuccessful.
+        /// Initial iteration happens immediately; backoffs only begin to occur if initial attempt is unsuccessful.
         /// </summary>
-        /// <param name="maxAttempts">The amount of times to try the operation, this includes the inital immediate attempt. This means a minimum of 2 attempts.</param>
-        /// <param name="initialBackoff">The intial amount of time to backoff. This increases exponentially with each attempt.</param>
+        /// <param name="maxAttempts">The amount of times to try the operation, this includes the initial immediate attempt. This means a minimum of 2 attempts.</param>
+        /// <param name="initialBackoff">The initial amount of time to backoff. This increases exponentially with each attempt.</param>
         /// <returns>If the operation succeeded during one of the attempts.</returns>
         public bool AttemptExponential(int maxAttempts, TimeSpan initialBackoff)
         {
@@ -58,7 +58,7 @@ namespace backoff_retry
             return false;
         }
 
-        private IList<TimeSpan> GenerateExponentialBackoffs(int maxAttempts, TimeSpan intialBackoff)
+        private IList<TimeSpan> GenerateExponentialBackoffs(int maxAttempts, TimeSpan initialBackoff)
         {
             var backoffs = new List<TimeSpan>();
 
@@ -66,7 +66,7 @@ namespace backoff_retry
             {
                 var multiplier = (int)Math.Pow(2, i);
 
-                backoffs.Add(TimeSpan.FromTicks(intialBackoff.Ticks * multiplier));
+                backoffs.Add(TimeSpan.FromTicks(initialBackoff.Ticks * multiplier));
             }
 
             return backoffs;
